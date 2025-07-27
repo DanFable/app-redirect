@@ -83,42 +83,52 @@
     </div>
 
     <script>
-        // Replace these with your actual app store URLs
+        // App store URLs
         const IOS_URL = 'https://apps.apple.com/gb/app/sessions-gizmo/id6741331880';
         const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.keepmeyoung.sessions';
         
-        function detectDeviceAndRedirect() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        // Debug info
+        console.log('User Agent:', navigator.userAgent);
+        
+        function redirect() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let targetUrl = '';
             
-            // iOS detection
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                setTimeout(() => {
-                    window.location.href = IOS_URL;
-                }, 2000);
-            }
-            // Android detection
-            else if (/android/i.test(userAgent)) {
-                setTimeout(() => {
-                    window.location.href = ANDROID_URL;
-                }, 2000);
-            }
-            // Desktop or unknown - show both options
-            else {
+            // Detect device type
+            if (/iphone|ipad|ipod/.test(userAgent)) {
+                targetUrl = IOS_URL;
+                console.log('iOS device detected, redirecting to App Store');
+            } else if (/android/.test(userAgent)) {
+                targetUrl = ANDROID_URL;
+                console.log('Android device detected, redirecting to Play Store');
+            } else {
+                console.log('Desktop/Unknown device, showing buttons');
+                // Show buttons for desktop
                 setTimeout(() => {
                     document.querySelector('.loading').style.display = 'none';
                     document.querySelector('#fallback').style.display = 'block';
-                }, 2000);
+                }, 1000);
+                return;
             }
+            
+            // Do the redirect after short delay
+            setTimeout(() => {
+                console.log('Redirecting to:', targetUrl);
+                window.location.href = targetUrl;
+            }, 1500);
+            
+            // Always show buttons as backup after 3 seconds
+            setTimeout(() => {
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('#fallback').style.display = 'block';
+            }, 3000);
         }
-
-        // Start the redirect process
-        detectDeviceAndRedirect();
         
-        // Fallback - show buttons after 4 seconds regardless
-        setTimeout(() => {
-            document.querySelector('.loading').style.display = 'none';
-            document.querySelector('#fallback').style.display = 'block';
-        }, 4000);
+        // Start immediately when page loads
+        window.addEventListener('load', redirect);
+        
+        // Also start right away (double safety)
+        redirect();
     </script>
 </body>
 </html> 
